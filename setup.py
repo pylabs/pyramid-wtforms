@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='pyramid-wtforms',
-    version='2.5.1',
+    version='2.6.0',
     packages=['pyramid_wtforms'],
     description='pyramid_wtforms provides bindings for the Pyramid web framework to the WTForms library.',
     author='PyLabs',

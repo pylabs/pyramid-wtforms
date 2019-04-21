@@ -1,6 +1,8 @@
 from cgi import FieldStorage as _CGIFieldStorage
 
 from wtforms.fields import *
+from wtforms.widgets import (ListWidget as _ListWidget,
+                             CheckboxInput as _CheckboxInput)
 
 from .widgets import MultipleFilesInput as _MultipleFilesInput
 from .storage import FieldStorage as _FieldStorage
@@ -50,3 +52,9 @@ class MultipleFilesField(_FileField):
                     self.data.append(_FieldStorage(i))
                 else:
                     raise ValueError(self.gettext('Only accept file(s).'))
+
+class MultipleCheckboxField(SelectMultipleField):
+    """Handle multiple checkbox list"""
+
+    widget = _ListWidget(prefix_label=False)
+    option_widget = _CheckboxInput()
