@@ -1,22 +1,25 @@
-import unittest, io
-from pyramid_wtforms.validators import FileQuantity, ValidationError
-from cgi import FieldStorage as cgiFieldStorage
+import unittest
+from cgi import FieldStorage as CGIFieldStorage
+
+from pyramid_wtforms.validators import FileQuantity
 from pyramid_wtforms.storage import FieldStorage
 from common import DummyForm, DummyField
+
 
 class TestPyramidWTFormsValidatorsFileQuantity(unittest.TestCase):
 
     def setUp(self):
-        self.form  = DummyForm()
+        self.form = DummyForm()
         self.field = DummyField()
 
     def test_should_not_work_against_single_file_upload(self):
-        self.field.data = FieldStorage(cgiFieldStorage())
+        self.field.data = FieldStorage(CGIFieldStorage())
         with self.assertRaises(ValueError):
             FileQuantity(min=1, max=1)(self.form, self.field)
 
     def test_should_work_against_multi_files_upload(self):
-        self.field.data = [FieldStorage(cgiFieldStorage()), FieldStorage(cgiFieldStorage())]
+        self.field.data = [FieldStorage(CGIFieldStorage()),
+                           FieldStorage(CGIFieldStorage())]
         self.assertIsNone(FileQuantity(min=1, max=3)(self.form, self.field))
 
         # boundary tests

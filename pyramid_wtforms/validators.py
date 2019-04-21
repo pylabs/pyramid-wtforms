@@ -1,20 +1,29 @@
 import os
+
 import wtforms
-from .storage import FieldStorage
 from wtforms.validators import *
 from wtforms.validators import StopValidation, ValidationError
 
-__all__ = wtforms.validators.__all__ + ('StopValidation', 'ValidationError', 'FileRequired', 'FileAllowed')
+from .storage import FieldStorage
+
+
+__all__ = wtforms.validators.__all__ + ('StopValidation',
+                                        'ValidationError',
+                                        'FileRequired',
+                                        'FileAllowed')
+
 
 class FileRequired(InputRequired):
-    '''
-    Check if the field is valid file entity. This class could be used for single file / multi files field.
-    '''
+    """Check if the field is valid file entity.
+
+    This class could be used for single file / multi files field."""
 
     def _check_fieldstorage(self, data):
-        '''
-        :param data: Could be instance of cgi.FieldStorage, or a list which contains instances of cgi.FieldStorage.
-        '''
+        """
+        :param data: Could be instance of cgi.FieldStorage,
+                     or a list which contains instances of cgi.FieldStorage.
+        """
+
         if isinstance(data, list) and len(data) > 0:
             for each_data in data:
                 if not isinstance(each_data, FieldStorage):
@@ -34,35 +43,42 @@ class FileRequired(InputRequired):
             field.errors[:] = []
             raise StopValidation(message)
 
+
 class FileAllowed:
-    '''
-    Check if the uploaded file(s) are valid mimetype(s).
-    '''
+    """Check if the uploaded file(s) are valid mimetype(s)."""
 
     def __init__(self, allowed_types, message=None):
-        '''
-        :param allowed_types: A list/tuple of extension names, ex. ['jpg', 'png']
-        '''
+        """
+        :param allowed_types: A list/tuple of extension names,
+               ex. ['jpg', 'png']
+        """
+
         self.allowed_types = [each_type.lower() for each_type in allowed_types]
         if message is None:
-            self.message = 'Only these types are allowed: ' + ', '.join(allowed_types)
+            self.message = ('Only these types are allowed: '
+                            + ', '.join(allowed_types))
         else:
             self.message = message
 
     def _check_allowed_types(self, data):
-        '''
-        :param data: Could be instance of pyramid_wtforms.storage.FieldStorage, or a list which contains
-        instances of pyramid_wtforms.storage.FieldStorage.
-        '''
+        """
+        :param data: Could be instance of 
+                     pyramid_wtforms.storage.FieldStorage, or a list
+                     which contains instances of
+                     pyramid_wtforms.storage.FieldStorage.
+        """
+
         pass_flag = True
 
         if isinstance(data, list):
             for each_data in data:
-                if each_data.filename.split('.')[-1].lower() not in self.allowed_types:
+                if (each_data.filename.split('.')[-1].lower() not in
+                        self.allowed_types):
                     pass_flag = False
                     break
         elif isinstance(data, FieldStorage):
-            if data.filename.split('.')[-1].lower() not in self.allowed_types:
+            if (data.filename.split('.')[-1].lower() not in
+                    self.allowed_types):
                 return False
         # pass if the file is not provided since the field could be optional
         elif data is None:
@@ -76,28 +92,29 @@ class FileAllowed:
         if not self._check_allowed_types(field.data):
             raise ValidationError(self.message)
 
+
 class FileSize:
-    '''
-    Check if the all size of uploaded file(s) are valid
-    '''
+    """Check if the all size of uploaded file(s) are valid."""
 
     def __init__(self, min=0, max=None, base='B', message=None):
-        '''
+        """
         :param min: lower limit of file size
         :param max: upper limit of file size, None means no limit
         :param base: valid base are: b(bytes), kb, mb, gb
         :param message: The error message
-        '''
+        """
+
         if message is None:
             msg = ['File size limited']
             msg.append('minimum size is {}'.format(min))
-            if max is not None: msg.append('maximum size is {}'.format(max))
+            if max is not None:
+                msg.append('maximum size is {}'.format(max))
             self.message = ', '.join(msg) + '.'
         else:
             self.message = message
-        
-        self.min  = min
-        self.max  = max
+
+        self.min = min
+        self.max = max
         self.base = base.lower()
         if self.base == 'b':
             self.min_size = min
@@ -115,7 +132,6 @@ class FileSize:
             raise ValueError('base should be either b, kb, mb, or gb.')
 
     def _is_out_of_limit(self, file):
-        import os
         current_pos = file.tell()
         file.seek(0, os.SEEK_END)
         file_size = file.tell()
@@ -128,10 +144,13 @@ class FileSize:
         return False
 
     def _check_file_size(self, data):
-        '''
-        :param data: Could be instance of pyramid_wtforms.storage.FieldStorage, or a list which contains
-        instances of pyramid_wtforms.storage.FieldStorage.
-        '''
+        """
+        :param data: Could be instance of
+                     pyramid_wtforms.storage.FieldStorage,
+                     or a list which contains instances of
+                     pyramid_wtforms.storage.FieldStorage.
+        """
+
         pass_flag = True
 
         if isinstance(data, list):
@@ -154,30 +173,35 @@ class FileSize:
         if not self._check_file_size(field.data):
             raise ValidationError(self.message)
 
+
 class FileQuantity:
-    '''
-    Check if quantities of uploaded file(s) are allowed
-    '''
+    """
+    Check if quantities of uploaded file(s) are allowed.
+    """
 
     def __init__(self, min, max, message=None):
-        '''
+        """
         :param min: lower limit of files quantities
         :param max: upper limit of files quantities
         :param message: The error message
-        '''
+        """
         if message is None:
-            self.message = 'File quantity limited: minimum is {}, maximum is {}.'.format(min, max)
+            self.message = ('File quantity limited: minimum is {},' 
+                            'maximum is {}.'.format(min, max))
         else:
             self.message = message
-        
-        self.min  = min
-        self.max  = max
+
+        self.min = min
+        self.max = max
 
     def _check_file_quantity(self, data):
-        '''
-        :param data: Could be instance of pyramid_wtforms.storage.FieldStorage, or a list which contains
-        instances of pyramid_wtforms.storage.FieldStorage.
-        '''
+        """
+        :param data: Could be instance of
+                     pyramid_wtforms.storage.FieldStorage,
+                     or a list which contains instances of
+                     pyramid_wtforms.storage.FieldStorage.
+        """
+
         pass_flag = True
 
         if isinstance(data, list):
@@ -185,11 +209,11 @@ class FileQuantity:
             if self.min > file_quantity or self.max < file_quantity:
                 pass_flag = False
         else:
-            raise ValueError('FileQuantity should be used against multi files upload')
+            raise ValueError('FileQuantity should be used against '
+                             'multi files upload')
 
         return pass_flag
 
     def __call__(self, form, field):
         if not self._check_file_quantity(field.data):
             raise ValidationError(self.message)
-

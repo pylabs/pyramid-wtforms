@@ -1,15 +1,17 @@
-from cgi import FieldStorage as _FieldStorage
+from cgi import FieldStorage as _CGIFieldStorage
 
 
 class FieldStorage:
-    '''cgi.FieldStorage does not support __bool__, so we need a simple wrapper
-    to support this protocol for convenience'''
+    """Replace cgi.FieldStorage with our own FieldStorage.
+
+    cgi.FieldStorage does not support __bool__, so we need a simple wrapper
+    to support this protocol for convenience."""
 
     def __init__(self, field_storage):
         self.field_storage = field_storage
 
     def __bool__(self):
-        if isinstance(self.field_storage, _FieldStorage):
+        if isinstance(self.field_storage, _CGIFieldStorage):
             return True
         else:
             return False

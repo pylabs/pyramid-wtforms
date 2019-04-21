@@ -1,15 +1,19 @@
 import unittest
+
 from pyramid import testing
+
 from pyramid_wtforms.forms import SecureForm
+
 
 class MyTestForm(SecureForm):
     pass
+
 
 class TestPyramidWTFormsFormsSecureForm(unittest.TestCase):
 
     def setUp(self):
         self.request = testing.DummyRequest()
-        self.config  = testing.setUp()
+        self.config = testing.setUp()
 
     def tearDown(self):
         testing.tearDown()

@@ -1,6 +1,8 @@
 import unittest
+
 from pyramid_wtforms.widgets import MultipleFilesInput
 from common import DummyField
+
 
 class TestPyramidWTFormsWidgetsMultipleFilesInput(unittest.TestCase):
 

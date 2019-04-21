@@ -1,8 +1,11 @@
 import unittest
+from cgi import FieldStorage as CGIFieldStorage
+
 from pyramid import testing
+
 from pyramid_wtforms import Form, MultipleFilesField
-from cgi import FieldStorage as cgiFieldStorage
 from pyramid_wtforms.storage import FieldStorage
+
 
 class TestPyramidWTFormsFieldsMultipleFilesField(unittest.TestCase):
 
@@ -18,7 +21,7 @@ class TestPyramidWTFormsFieldsMultipleFilesField(unittest.TestCase):
         testing.tearDown()
 
     def test_process_data_with_valuelist_should_set_data_properly(self):
-        test_objects = [FieldStorage(cgiFieldStorage())]
+        test_objects = [FieldStorage(CGIFieldStorage())]
         self.form.files.process_formdata(test_objects)
         self.assertEqual(self.form.files.data, test_objects)
 
@@ -26,6 +29,6 @@ class TestPyramidWTFormsFieldsMultipleFilesField(unittest.TestCase):
         self.form.files.process_formdata([b''])
         self.assertIsNone(self.form.files.data)
 
-    def test_process_data_without_a_correspoding_upload_files_should_raise_error(self):
+    def test_process_data_without_a_upload_files_should_raise_error(self):
         with self.assertRaises(ValueError):
             self.form.files.process_formdata([])
