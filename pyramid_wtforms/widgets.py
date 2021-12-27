@@ -1,4 +1,5 @@
 from wtforms.widgets import *
+from markupsafe import Markup
 
 
 class MultipleFilesInput:
@@ -7,6 +8,4 @@ class MultipleFilesInput:
     def __call__(self, field, **kwargs):
         kwargs.setdefault('id', field.id)
         kwargs.setdefault('multiple', 'multiple')
-        return HTMLString('<input %s>' % html_params(name=field.name,
-                                                     type='file',
-                                                     **kwargs))
+        return Markup('<input %s>' % html_params(name=field.name, type='file', **kwargs))
